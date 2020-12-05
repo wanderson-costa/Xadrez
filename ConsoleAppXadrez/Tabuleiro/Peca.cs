@@ -1,6 +1,6 @@
-﻿using Tabuleiro.Enums;
+﻿using tabuleiro.enums;
 
-namespace Tabuleiro
+namespace tabuleiro
 {
     class Peca
     {
