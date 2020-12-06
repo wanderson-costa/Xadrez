@@ -24,7 +24,7 @@ namespace xadrez
         public void executarMovimento(Posicao origem, Posicao destino)
         {
             Peca pecaOrigem = this.tabuleiro.retirarPeca(origem);
-            pecaOrigem.incrementarMovimento();
+            pecaOrigem.incrementarMovimentos();
             Peca pecaCapturada = this.tabuleiro.retirarPeca(destino);
             this.tabuleiro.colocarPeca(pecaOrigem, destino);
         }
