@@ -7,29 +7,29 @@ namespace ConsoleAppXadrez
 {
     class Tela
     {
-        public static void imprimirTabuleiro(Tabuleiro tab)
+        public static void imprimirTabuleiro(Tabuleiro tabuleiro)
         {
-            for (int i = 0; i < tab.linhas; i++)
+            for (int i = 0; i < tabuleiro.linhas; i++)
             {
                 Console.Write(8 - i + " ");
-                for (int j = 0; j < tab.colunas; j++)
+                for (int j = 0; j < tabuleiro.colunas; j++)
                 {
-                    imprimirPeca(tab.peca(i, j));
+                    imprimirPeca(tabuleiro.peca(i, j));
                 }
                 Console.WriteLine();
             }
             Console.WriteLine("  a b c d e f g h");
         }
 
-        public static void imprimirTabuleiro(Tabuleiro tab, bool[,] posicoesPossiveis)
+        public static void imprimirTabuleiro(Tabuleiro tabuleiro, bool[,] posicoesPossiveis)
         {
             ConsoleColor fundoOriginal = Console.BackgroundColor;
             ConsoleColor fundoAlterado = ConsoleColor.DarkGray;
 
-            for (int i = 0; i < tab.linhas; i++)
+            for (int i = 0; i < tabuleiro.linhas; i++)
             {
                 Console.Write(8 - i + " ");
-                for (int j = 0; j < tab.colunas; j++)
+                for (int j = 0; j < tabuleiro.colunas; j++)
                 {
                     if (posicoesPossiveis[i, j])
                     {
@@ -39,7 +39,7 @@ namespace ConsoleAppXadrez
                     {
                         Console.BackgroundColor = fundoOriginal;
                     }
-                    imprimirPeca(tab.peca(i, j));
+                    imprimirPeca(tabuleiro.peca(i, j));
                     Console.BackgroundColor = fundoOriginal;
                 }
                 Console.WriteLine();
