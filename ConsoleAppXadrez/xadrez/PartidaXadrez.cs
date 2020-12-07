@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using tabuleiro;
 using tabuleiro.enums;
 using tabuleiro.excecoes;
@@ -12,12 +12,17 @@ namespace xadrez
         public int turno { get; private set; }
         public Cor jogadorAtual { get; private set; }
 
+        private HashSet<Peca> pecas;
+        private HashSet<Peca> capturadas;
+
         public PartidaXadrez()
         {
             this.tabuleiro = new Tabuleiro(8, 8);
             this.finalizada = false;
             this.turno = 1;
             this.jogadorAtual = Cor.Branca;
+            pecas = new HashSet<Peca>();
+            capturadas = new HashSet<Peca>();
             colocarPecas();
         }
 
@@ -27,11 +32,41 @@ namespace xadrez
             pecaOrigem.incrementarMovimentos();
             Peca pecaCapturada = this.tabuleiro.retirarPeca(destino);
             this.tabuleiro.colocarPeca(pecaOrigem, destino);
+            if (pecaCapturada != null)
+            {
+                capturadas.Add(pecaCapturada);
+            }
         }
 
         private void alternarJogador()
         {
             this.jogadorAtual = this.jogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
+        }
+
+        public HashSet<Peca> pecasCapturadas(Cor cor)
+        {
+            HashSet<Peca> aux = new HashSet<Peca>();
+            foreach (Peca x in capturadas)
+            {
+                if (x.cor == cor)
+                {
+                    aux.Add(x);
+                }
+            }
+            return aux;
+        }
+        public HashSet<Peca> pecasEmJogo(Cor cor)
+        {
+            HashSet<Peca> aux = new HashSet<Peca>();
+            foreach (Peca x in pecas)
+            {
+                if (x.cor == cor)
+                {
+                    aux.Add(x);
+                }
+            }
+            aux.ExceptWith(pecasCapturadas(cor));
+            return aux;
         }
 
         public void realizarJogada(Posicao origem, Posicao destino)
@@ -43,7 +78,8 @@ namespace xadrez
 
         public void validarPosicaoOrigem(Posicao posicao)
         {
-            if (this.tabuleiro.peca(posicao) == null) {
+            if (this.tabuleiro.peca(posicao) == null)
+            {
                 throw new Excecao("Não existe peça na posição escolhida!");
             }
 
@@ -66,21 +102,26 @@ namespace xadrez
             }
         }
 
+        private void colocarNovaPeca(char coluna, int linha, Peca peca)
+        {
+            this.tabuleiro.colocarPeca(peca, new PosicaoXadrez(coluna, linha).toPosicao());
+            this.pecas.Add(peca);
+        }
         private void colocarPecas()
         {
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Branca), new PosicaoXadrez('c', 1).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Branca), new PosicaoXadrez('c', 2).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Branca), new PosicaoXadrez('d', 2).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Branca), new PosicaoXadrez('e', 2).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Branca), new PosicaoXadrez('e', 1).toPosicao());
-            this.tabuleiro.colocarPeca(new Rei(this.tabuleiro, Cor.Branca), new PosicaoXadrez('d', 1).toPosicao());
+            colocarNovaPeca('c', 1, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('c', 2, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('d', 2, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('e', 2, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('e', 1, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('d', 1, new Rei(this.tabuleiro, Cor.Branca));
 
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Preta), new PosicaoXadrez('c', 7).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Preta), new PosicaoXadrez('c', 8).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Preta), new PosicaoXadrez('d', 7).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Preta), new PosicaoXadrez('e', 7).toPosicao());
-            this.tabuleiro.colocarPeca(new Torre(this.tabuleiro, Cor.Preta), new PosicaoXadrez('e', 8).toPosicao());
-            this.tabuleiro.colocarPeca(new Rei(this.tabuleiro, Cor.Preta), new PosicaoXadrez('d', 8).toPosicao());
+            colocarNovaPeca('c', 7, new Torre(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('c', 8, new Torre(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('d', 7, new Torre(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('e', 7, new Torre(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('e', 8, new Torre(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('d', 8, new Rei(this.tabuleiro, Cor.Preta)) ;
         }
     }
 }
