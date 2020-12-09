@@ -94,6 +94,37 @@ namespace xadrez
             return false;
         }
 
+        public bool estaEmXequemate(Cor cor)
+        {
+            if (!estaEmXeque(cor))
+            {
+                return false;
+            }
+            foreach (Peca objPeca in pecasEmJogo(cor))
+            {
+                bool[,] mat = objPeca.movimentosPossiveis();
+                for (int i = 0; i < this.tabuleiro.linhas; i++)
+                {
+                    for (int j = 0; j < this.tabuleiro.colunas; j++)
+                    {
+                        if (mat[i, j])
+                        {
+                            Posicao origem = objPeca.posicao;
+                            Posicao destino = new Posicao(i, j);
+                            Peca pecaCapturada = executarMovimento(origem, destino);
+                            bool xeque = estaEmXeque(cor);
+                            desfazerMovimento(origem, destino, pecaCapturada);
+                            if (!xeque)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
         public HashSet<Peca> pecasCapturadas(Cor cor)
         {
             HashSet<Peca> objPeca = new HashSet<Peca>();
@@ -130,9 +161,15 @@ namespace xadrez
             }
 
             this.xeque = estaEmXeque(pecaAdversaria(jogadorAtual)) ? true : false;
-
-            alternarJogador();
-            this.turno++;
+            if (estaEmXequemate(pecaAdversaria(jogadorAtual)))
+            {
+                this.finalizada = true;
+            }
+            else
+            {
+                alternarJogador();
+                this.turno++;
+            }
         }
 
         public void validarPosicaoOrigem(Posicao posicao)
@@ -168,6 +205,7 @@ namespace xadrez
         }
         private void colocarPecas()
         {
+            /*
             colocarNovaPeca('c', 1, new Torre(this.tabuleiro, Cor.Branca));
             colocarNovaPeca('c', 2, new Torre(this.tabuleiro, Cor.Branca));
             colocarNovaPeca('d', 2, new Torre(this.tabuleiro, Cor.Branca));
@@ -181,6 +219,13 @@ namespace xadrez
             colocarNovaPeca('e', 7, new Torre(this.tabuleiro, Cor.Preta));
             colocarNovaPeca('e', 8, new Torre(this.tabuleiro, Cor.Preta));
             colocarNovaPeca('d', 8, new Rei(this.tabuleiro, Cor.Preta));
+            */
+            colocarNovaPeca('c', 1, new Torre(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('d', 1, new Rei(this.tabuleiro, Cor.Branca));
+            colocarNovaPeca('h', 7, new Torre(this.tabuleiro, Cor.Branca));
+
+            colocarNovaPeca('a', 8, new Rei(this.tabuleiro, Cor.Preta));
+            colocarNovaPeca('b', 8, new Torre(this.tabuleiro, Cor.Preta));
         }
     }
 }

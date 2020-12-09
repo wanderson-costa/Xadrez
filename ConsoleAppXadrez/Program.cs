@@ -43,6 +43,8 @@ namespace ConsoleAppXadrez
                         Console.ReadLine();
                     }
                 }
+                Console.Clear();
+                Tela.imprimirPartida(partida);
             }
             catch (Excecao e)
             {
