@@ -5,10 +5,13 @@ namespace xadrez
 {
     class Rei : Peca
     {
-        public Rei(Tabuleiro tabuleiro, Cor cor) : base(tabuleiro, cor)
-        {
+        private PartidaXadrez partida;
 
+        public Rei(Tabuleiro tabuleiro, Cor cor, PartidaXadrez partida) : base(tabuleiro, cor)
+        {
+            this.partida = partida;
         }
+
         public override string ToString()
         {
             return "R";
@@ -18,6 +21,12 @@ namespace xadrez
         {
             Peca peca = base.tabuleiro.peca(posicao);
             return peca == null || peca.cor != base.cor;
+        }
+
+        private bool testaTorreElegivelRoque(Posicao posicao)
+        {
+            Peca peca = base.tabuleiro.peca(posicao);
+            return peca != null && peca is Torre && peca.cor == base.cor && peca.qtdMovimento == 0;
         }
 
         public override bool[,] movimentosPossiveis()
@@ -81,6 +90,38 @@ namespace xadrez
                 mat[pos.linha, pos.coluna] = true;
             }
 
+            // #jogadas especiais - roque
+            if (base.qtdMovimento == 0 && !this.partida.xeque)
+            {
+                //roque pequeno
+                Posicao posT1 = new Posicao(base.posicao.linha, base.posicao.coluna + 3);
+
+                if (testaTorreElegivelRoque(posT1))
+                {
+                    Posicao p1 = new Posicao(base.posicao.linha, base.posicao.coluna + 1);
+                    Posicao p2 = new Posicao(base.posicao.linha, base.posicao.coluna + 2);
+
+                    if (base.tabuleiro.peca(p1) == null && base.tabuleiro.peca(p2) == null)
+                    {
+                        mat[base.posicao.linha, base.posicao.coluna + 2] = true;
+                    }
+                }
+
+                //roque grande
+                Posicao posT2 = new Posicao(base.posicao.linha, base.posicao.coluna - 4);
+
+                if (testaTorreElegivelRoque(posT2))
+                {
+                    Posicao p1 = new Posicao(base.posicao.linha, base.posicao.coluna - 1);
+                    Posicao p2 = new Posicao(base.posicao.linha, base.posicao.coluna - 2);
+                    Posicao p3 = new Posicao(base.posicao.linha, base.posicao.coluna - 3);
+
+                    if (base.tabuleiro.peca(p1) == null && base.tabuleiro.peca(p2) == null && base.tabuleiro.peca(p3) == null)
+                    {
+                        mat[base.posicao.linha, base.posicao.coluna - 2] = true;
+                    }
+                }
+            }
             return mat;
         }
     }
