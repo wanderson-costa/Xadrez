@@ -240,6 +240,21 @@ namespace xadrez
                 throw new Excecao("Você não pode se colocar em xeque!");
             }
 
+            Peca peca = this.tabuleiro.peca(destino);
+
+            // #jogadas especiais - promoção
+            if (peca is Peao)
+            {
+                if ((peca.cor == Cor.Branca && destino.linha == 0) || (peca.cor == Cor.Preta && destino.linha == 7))
+                {
+                    peca = this.tabuleiro.retirarPeca(destino);
+                    pecas.Remove(peca);
+                    Peca dama = new Dama(this.tabuleiro, peca.cor);
+                    this.tabuleiro.colocarPeca(dama, destino);
+                    pecas.Add(dama);
+                }
+            }
+
             this.xeque = estaEmXeque(pecaAdversaria(jogadorAtual)) ? true : false;
             if (estaEmXequemate(pecaAdversaria(jogadorAtual)))
             {
@@ -250,8 +265,6 @@ namespace xadrez
                 alternarJogador();
                 this.turno++;
             }
-
-            Peca peca = this.tabuleiro.peca(destino);
 
             // #jogadas especiais - en passant
             if (peca is Peao && (destino.linha == origem.linha - 2 || destino.linha == origem.linha + 2))
